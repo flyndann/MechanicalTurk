@@ -155,4 +155,56 @@ void	push_initial_elements(t_stack **stack_a, t_stack **stack_b)
 	}
 }
 
+/**
+ * Pushes elements until stack A has only 3 elements left
+ * @param stack_a Pointer to stack A
+ * @param stack_b Pointer to stack B
+ */
+void	push_until_three_left(t_stack **stack_a, t_stack **stack_b)
+{
+	if(!stack_a || !stack_b || !*stack_a)
+		return;
+	while(ft_stack_size(*stack_a)>3)
+	{
+		assign_target(*stack_a, *stack_b);
+		pb(stack_a, stack_b);
+		ft_printf("pb\n");
+		if(ft_stack_size(*stack_b)>=2&&(*stack_b)->num < (*stack_b)->next->num)
+		{
+			sb(stack_b);
+			ft_printf("sb\n");
+		}
+	}
+}
 
+//there would be a sort three 
+//here but alread have it
+
+/**
+ * Finds position of minimum value in stack
+ * @param stack Stack to search
+ * @return Position of minuimmvalue or -1 if stack empty
+ */
+int find_min_position(t_stack *stack)
+{
+	if(!stack)
+		return -1;
+	t_stack *current = stack;
+	t_stack *min_node = stack;
+	int min_val = stack->num;
+	int position = 0;
+	int min_pos = 0;
+	while(current)
+	{
+		if(current->num < min_val)
+		{
+			min_val = current->num;
+			min_pos = position;
+			min_node = current;
+		}
+		current = current->next;
+		position++;
+	
+	}
+	return min_pos;
+}
