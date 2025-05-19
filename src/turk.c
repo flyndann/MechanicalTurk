@@ -1,7 +1,21 @@
 #include "pushswap.h"
 
 //from deepseek
-t_stack	*find_closest_smaller(t_stack, int num)
+t_stack	*find_max_node(t_stack *stack)
+{
+	t_stack	*current = stack;
+	t_stack *max_node= stack;
+	while(current)
+	{
+		if(current->num > max_node->num)
+			max_node = current;
+		current = current->next;
+	}
+	return max_node;
+}
+
+//from deepseek
+t_stack	*find_closest_smaller(t_stack *stack, int num)
 {
 	t_stack	*current = stack;
 	t_stack	*closest = NULL;
@@ -240,7 +254,7 @@ void	reinsert_elements(t_stack **stack_a, t_stack **stack_b)
 		return;
 	while(*stack_b)
 	{
-		assign_target(*stack_a, stack_b);
+		assign_target(*stack_a, *stack_b);
 		t_stack *cheapest = find_cheapest_node(*stack_a, *stack_b);
 		if(!cheapest)
 			break;
