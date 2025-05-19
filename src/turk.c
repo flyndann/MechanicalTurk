@@ -208,3 +208,59 @@ int find_min_position(t_stack *stack)
 	}
 	return min_pos;
 }
+
+/**
+ * reuinserts elements from stack B back to stack A
+ * @param stack_a Pointer to stack A
+ * @param stack_b Pointer to stack B
+ */
+void	reinsert_elements(t_stack **stack_a, t_stack **stack_b)
+{
+	if(!stack_a || !stack_b|| !*stack_b)
+		return;
+	if(!cheapest)
+		break;
+	smart_rotate(stack_a, cheapest->target_pos, 'a');
+	smart_rotate(stack_b, get_node_position(*stack_b, cheapest),'b');
+	pa(stack_a, stack_b);
+	ft_printf("pa\n");
+
+}
+
+/**Main sorting algorithm
+ * @param stack_a Pointer to stack A
+ * @param stack_b Pointer to stack B
+ */
+void	mechanical_turk()
+{
+	if(!stack_a || !stack_b || !*stack_a)
+	       return;
+	//For very small stacks, use simpler approaches
+	if(ft_stack_size(*stack:a)<=1)	
+		return; //already sorted
+	else if(ft_stack_size(*stack_a)==2)
+	{
+		if((*stack_a)->num > (*stack_a)->next->num)
+		{
+			sa(stack_a);
+			ft_printf("sa\n");
+		}
+		return
+	
+	}
+	else if(ft_stack_size(*stack_a) == 3)
+	{
+		sort_three(stack_a);
+		return;
+	}
+	//Main algorithm for larger stacks.
+	push_initial_elements(stack_a, stack_b);
+	push_until_three_left(stack_a, stack_b);
+	if(!ft_is_sorted(*stack_a))
+		sort_three(stack_a);
+	//reinsert elements from stack B to stack A
+	reinsert_elements(stack_a, stack_b);
+	smart_rotate(stack_a, find_min_position(*stack_a),'a');
+}
+
+
