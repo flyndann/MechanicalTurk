@@ -1,6 +1,22 @@
 #include "pushswap.h"
 
 //from deepseek
+int	get_node_position(t_stack *stack, t_stack *node)
+{
+	int	pos = 0;
+	t_stack	*current = stack;
+	while(current)
+	{
+		if(current == node)
+			return pos;
+		pos++;
+		current = current->next;
+	}
+	return -1;
+
+}
+
+//from deepseek
 t_stack	*find_max_node(t_stack *stack)
 {
 	t_stack	*current = stack;
@@ -112,10 +128,10 @@ void	assign_target(t_stack *a, t_stack *b)
 		target_a = find_closest_smaller(a, current_b->num);
 		if(!target_a)
 			target_a = find_max_node(a);
-		current_b->target_pos = get_node_psition(a, target_a);
-		current_b->rarget_node = target_a;
+		current_b->target_pos = get_node_position(a, target_a);
+		current_b->target_node = target_a;
 		current_b->target_above_median = (current_b->target_pos > (a_size / 2));
-		current_b->next;
+		current_b = current_b->next;
 	}
 }
 
@@ -173,8 +189,8 @@ void	push_initial_elements(t_stack **stack_a, t_stack **stack_b)
 	if(ft_stack_size(*stack_a) >= 2)
 	{
 		pb(stack_a, stack_b);
-		ft_printg("pb\n");
-		if(ft_stack_size(*stack_a>=1)
+		ft_printf("pb\n");
+		if(ft_stack_size(*stack_a) >= 1)
 		{
 			pb(stack_a,stack_b);
 			ft_printf("pb\n");
@@ -224,7 +240,6 @@ int find_min_position(t_stack *stack)
 	if(!stack)
 		return -1;
 	t_stack *current = stack;
-	t_stack *min_node = stack;
 	int min_val = stack->num;
 	int position = 0;
 	int min_pos = 0;
@@ -234,7 +249,6 @@ int find_min_position(t_stack *stack)
 		{
 			min_val = current->num;
 			min_pos = position;
-			min_node = current;
 		}
 		current = current->next;
 		position++;

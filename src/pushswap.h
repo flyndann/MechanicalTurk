@@ -26,6 +26,7 @@ typedef	struct s_stack{
 	int	push_cost;
 	int	target_pos;
 	bool	above_median;
+	bool	target_above_median;
 	bool	cheapest;
 	struct s_stack	*next;
 	struct s_stack	*prev;
@@ -62,4 +63,18 @@ void    sort_three(t_stack **stack);
 void	single_case(t_stack **);
 int     ft_is_reversed(t_stack *stack);
 char    *ft_join_args(int argc, char **argv);
+
+//functions that were originally in the turk file
+int     get_node_position(t_stack *stack, t_stack *node);
+t_stack *find_max_node(t_stack *stack);
+t_stack *find_closest_smaller(t_stack *stack, int num);
+int     get_rotation_cost(t_stack *stack, int pos);
+void    smart_rotate(t_stack **stack, int pos, char stack_name);
+void    assign_target(t_stack *a, t_stack *b);
+int     calculate_cost(t_stack *a, t_stack *b, t_stack *b_node);
+t_stack *find_cheapest_node(t_stack *a, t_stack *b);
+
+//prelims
+void    push_initial_elements(t_stack **stack_a, t_stack **stack_b);
+void    push_until_three_left(t_stack **stack_a, t_stack **stack_b);
 #endif
