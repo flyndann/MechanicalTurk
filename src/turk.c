@@ -1,12 +1,30 @@
 #include "pushswap.h"
 
+//from deepseek
+t_stack	*find_closest_smaller(t_stack, int num)
+{
+	t_stack	*current = stack;
+	t_stack	*closest = NULL;
+	int	min_diff = INT_MAX;
+	while(current)
+	{
+		if(current->num < num && (num - current->num) < min_diff)
+		{
+			min_diff = num - current->num;
+			closest = current;
+		}
+		current = current->next;
+	}
+	return closest;
+}
+
 /**
  * Calculates rotation cost for a position in stack
  * @param stack The stack to rotate
  * param pos Position to rotate to
  * return Number of rotations needed
  */
-int	get_rotation_cost()
+int	get_rotation_cost(t_stack *stack, int pos)
 {
 	int	size;
 
@@ -25,7 +43,9 @@ int	get_rotation_cost()
  */
 void	smart_rotate(t_stack **stack, int pos, char stack_name)
 {
-	if(!stack || !*stack);
+	if(!stack || !*stack)
+		return;
+	int size = ft_stack_size(*stack);
 	if(pos <= size / 2)
 	{
 		while(pos-- > 0)
@@ -37,7 +57,7 @@ void	smart_rotate(t_stack **stack, int pos, char stack_name)
 			}
 			else
 			{
-				rn(stack);
+				rb(stack);
 				ft_printf("rb\n");
 			}
 		}
@@ -218,12 +238,17 @@ void	reinsert_elements(t_stack **stack_a, t_stack **stack_b)
 {
 	if(!stack_a || !stack_b|| !*stack_b)
 		return;
-	if(!cheapest)
-		break;
-	smart_rotate(stack_a, cheapest->target_pos, 'a');
-	smart_rotate(stack_b, get_node_position(*stack_b, cheapest),'b');
-	pa(stack_a, stack_b);
-	ft_printf("pa\n");
+	while(*stack_b)
+	{
+		assign_target(*stack_a, stack_b);
+		t_stack *cheapest = find_cheapest_node(*stack_a, *stack_b);
+		if(!cheapest)
+			break;
+		smart_rotate(stack_a, cheapest->target_pos, 'a');
+		smart_rotate(stack_b, get_node_position(*stack_b, cheapest),'b');
+		pa(stack_a, stack_b);
+		ft_printf("pa\n");
+	}
 
 }
 
@@ -231,12 +256,12 @@ void	reinsert_elements(t_stack **stack_a, t_stack **stack_b)
  * @param stack_a Pointer to stack A
  * @param stack_b Pointer to stack B
  */
-void	mechanical_turk()
+void	mechanical_turk(t_stack **stack_a, t_stack **stack_b)
 {
 	if(!stack_a || !stack_b || !*stack_a)
 	       return;
 	//For very small stacks, use simpler approaches
-	if(ft_stack_size(*stack:a)<=1)	
+	if(ft_stack_size(*stack_a)<=1)	
 		return; //already sorted
 	else if(ft_stack_size(*stack_a)==2)
 	{
@@ -245,7 +270,7 @@ void	mechanical_turk()
 			sa(stack_a);
 			ft_printf("sa\n");
 		}
-		return
+		return;
 	
 	}
 	else if(ft_stack_size(*stack_a) == 3)
