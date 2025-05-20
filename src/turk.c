@@ -1,5 +1,39 @@
 #include "pushswap.h"
 
+void double_smart_rotate(t_stack **a, t_stack **b, t_stack *b_node)
+{
+	int a_pos = b_node->target_pos;
+	int b_pos = get_node_position(*b, b_node);
+	int a_size = ft_stack_size(*a);
+	int b_size = ft_stack_size(*b);
+
+	// Both in first half: do rr
+	while (a_pos > 0 && b_pos > 0 && a_pos <= a_size / 2 && b_pos <= b_size / 2)
+	{
+		rr(a, b);
+		ft_printf("rr\n");
+		a_pos--;
+		b_pos--;
+	}
+
+	// Both in second half: do rrr
+	while (a_pos > a_size / 2 && b_pos > b_size / 2)
+	{
+		rra(a);
+		rrb(b);
+		ft_printf("rrr\n");
+		a_pos++;
+		b_pos++;
+		if (a_pos >= a_size) a_pos -= a_size;
+		if (b_pos >= b_size) b_pos -= b_size;
+	}
+
+	// Finish rotating each stack independently
+	smart_rotate(a, a_pos, 'a');
+	smart_rotate(b, b_pos, 'b');
+}
+
+
 //from deepseek
 int	get_node_position(t_stack *stack, t_stack *node)
 {
@@ -30,17 +64,38 @@ t_stack	*find_max_node(t_stack *stack)
 	return max_node;
 }
 
-//from deepseek
-t_stack	*find_closest_smaller(t_stack *stack, int num)
+t_stack	*find_min_node(t_stack *stack)
 {
 	t_stack	*current = stack;
-	t_stack	*closest = NULL;
-	int	min_diff = INT_MAX;
+	t_stack	*min_node = stack;
 	while(current)
 	{
-		if(current->num < num && (num - current->num) < min_diff)
+		if(current->num < min_node->num)
+			min_node = current;
+		current = current->next;
+	}
+	return min_node;
+}
+
+/**
+ * Finds the node with the closest smaller value to the given number
+ * @param stack the stack to searching
+ * @param num The number to find closest smaller value to
+ * @return Node with closest smaller value, or NULL if none exists
+ */
+t_stack	*find_closest_smaller(t_stack *stack, int num)
+{
+	if(!stack)
+		return NULL;
+	t_stack *current = stack;
+	t_stack *closest = NULL;
+	int max_smaller = INT_MIN;
+
+	while(current)
+	{
+		if(current->num < num && current->num > max_smaller)
 		{
-			min_diff = num - current->num;
+			max_smaller = current->num;
 			closest = current;
 		}
 		current = current->next;
@@ -127,7 +182,7 @@ void	assign_target(t_stack *a, t_stack *b)
 	{
 		target_a = find_closest_smaller(a, current_b->num);
 		if(!target_a)
-			target_a = find_max_node(a);
+			target_a = find_min_node(a);
 		current_b->target_pos = get_node_position(a, target_a);
 		current_b->target_node = target_a;
 		current_b->target_above_median = (current_b->target_pos > (a_size / 2));
@@ -264,56 +319,54 @@ int find_min_position(t_stack *stack)
  */
 void	reinsert_elements(t_stack **stack_a, t_stack **stack_b)
 {
-	if(!stack_a || !stack_b|| !*stack_b)
-		return;
-	while(*stack_b)
+	while (*stack_b)
 	{
 		assign_target(*stack_a, *stack_b);
 		t_stack *cheapest = find_cheapest_node(*stack_a, *stack_b);
-		if(!cheapest)
+		if (!cheapest)
 			break;
-		smart_rotate(stack_a, cheapest->target_pos, 'a');
-		smart_rotate(stack_b, get_node_position(*stack_b, cheapest),'b');
+		double_smart_rotate(stack_a, stack_b, cheapest);
 		pa(stack_a, stack_b);
 		ft_printf("pa\n");
 	}
-
 }
 
-/**Main sorting algorithm
- * @param stack_a Pointer to stack A
- * @param stack_b Pointer to stack B
- */
-void	mechanical_turk(t_stack **stack_a, t_stack **stack_b)
+void mechanical_turk(t_stack **stack_a, t_stack **stack_b)
 {
-	if(!stack_a || !stack_b || !*stack_a)
-	       return;
-	//For very small stacks, use simpler approaches
-	if(ft_stack_size(*stack_a)<=1)	
-		return; //already sorted
-	else if(ft_stack_size(*stack_a)==2)
-	{
-		if((*stack_a)->num > (*stack_a)->next->num)
-		{
-			sa(stack_a);
-			ft_printf("sa\n");
-		}
-		return;
-	
-	}
-	else if(ft_stack_size(*stack_a) == 3)
-	{
-		sort_three(stack_a);
-		return;
-	}
-	//Main algorithm for larger stacks.
-	push_initial_elements(stack_a, stack_b);
-	push_until_three_left(stack_a, stack_b);
-	if(!ft_is_sorted(*stack_a))
-		sort_three(stack_a);
-	//reinsert elements from stack B to stack A
-	reinsert_elements(stack_a, stack_b);
-	smart_rotate(stack_a, find_min_position(*stack_a),'a');
-}
+    if (!stack_a || !stack_b || !*stack_a)
+        return;
 
+    int size = ft_stack_size(*stack_a);
+
+    if (size <= 1)
+        return; // already sorted
+
+    else if (size == 2)
+    {
+        if ((*stack_a)->num > (*stack_a)->next->num)
+        {
+            sa(stack_a);
+            ft_printf("sa\n");
+        }
+        return;
+    }
+    else if (size == 3)
+    {
+        sort_three(stack_a);
+        return;
+    }
+
+    // Main algorithm for larger stacks
+    push_initial_elements(stack_a, stack_b);
+    push_until_three_left(stack_a, stack_b);
+
+    if (!ft_is_sorted(*stack_a))
+        sort_three(stack_a);
+
+    // Reinsert elements from stack B to stack A
+    reinsert_elements(stack_a, stack_b);
+
+    // Final rotate to position minimum element at the top
+    smart_rotate(stack_a, find_min_position(*stack_a), 'a');
+}
 

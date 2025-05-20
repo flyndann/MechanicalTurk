@@ -24,7 +24,7 @@ int	main(int argc, char **argv)
 {
 
 	t_stack	*stack_a = NULL;
-//	t_stack *stack_b = NULL;
+	t_stack *stack_b = NULL;
 	
 
 	
@@ -37,10 +37,10 @@ int	main(int argc, char **argv)
 		free(joined);
 	}
 	
-	//ft_print_stack(stack_b);
-
-	sort_three(&stack_a);
-	//ft_print_stack(stack_a);
+	if(ft_stack_size(stack_a) > 3)
+			mechanical_turk(&stack_a, &stack_b);
+	else
+		sort_three(&stack_a);
 	
 
 

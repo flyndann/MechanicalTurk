@@ -77,4 +77,8 @@ t_stack *find_cheapest_node(t_stack *a, t_stack *b);
 //prelims
 void    push_initial_elements(t_stack **stack_a, t_stack **stack_b);
 void    push_until_three_left(t_stack **stack_a, t_stack **stack_b);
+
+int find_min_position(t_stack *stack);
+void    reinsert_elements(t_stack **stack_a, t_stack **stack_b);
+void    mechanical_turk(t_stack **stack_a, t_stack **stack_b);
 #endif

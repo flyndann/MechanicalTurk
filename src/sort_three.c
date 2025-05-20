@@ -1,4 +1,19 @@
 #include "pushswap.h"
+int     ft_is_hogback(t_stack *stack)
+{
+
+        if(!stack||!stack->next||!stack->next->next)
+                return 0;
+        int a = stack->num;
+        int b = stack->next->num;
+        int c = stack->next->next->num;
+        if(b > c && b > a && a < c)
+                return 1;
+        else
+                return 0;
+
+}
+     
 
 void	sort_three(t_stack **stack)
 {
